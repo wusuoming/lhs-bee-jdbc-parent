@@ -18,12 +18,12 @@ public class PreparedStatementProxy extends StatementProxy<PreparedStatement> im
 
     @Override
     public ResultSet executeQuery() throws SQLException {
-        return statement.executeQuery();
+        return executeProxy(() -> statement.executeQuery());
     }
 
     @Override
     public int executeUpdate() throws SQLException {
-        return statement.executeUpdate();
+        return executeProxy(() -> statement.executeUpdate());
     }
 
     @Override
@@ -137,7 +137,7 @@ public class PreparedStatementProxy extends StatementProxy<PreparedStatement> im
 
     @Override
     public boolean execute() throws SQLException {
-        return statement.execute();
+        return executeProxy(() -> statement.execute());
     }
 
     @Override
@@ -298,6 +298,7 @@ public class PreparedStatementProxy extends StatementProxy<PreparedStatement> im
 
     @Override
     public void setClob(int parameterIndex, Reader reader) throws SQLException {
+        statement.setClob(parameterIndex, reader);
 
     }
 
