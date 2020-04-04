@@ -17,7 +17,7 @@ import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * @author wusuoming
+ * @author luohuasheng
  */
 public final class DriverProxy implements Driver {
     private static DriverProxy INSTANCE = null;
@@ -41,22 +41,26 @@ public final class DriverProxy implements Driver {
     public static void registerDriver(Driver driver) {
         try {
             DriverManager.registerDriver(driver);
-            Field field = DriverManager.class.getDeclaredField("registeredDrivers");
-            field.setAccessible(true);
-            CopyOnWriteArrayList<Object> list = (CopyOnWriteArrayList<Object>) field.get(DriverManager.class);
-            Object object = list.get(list.size() - 1);
-            list.remove(object);
-            list.add(0, object);
-            try {
-                MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
+            for (Field field : DriverManager.class.getDeclaredFields()) {
+                if (field.getType().equals(CopyOnWriteArrayList.class)) {
+                    field.setAccessible(true);
+                    CopyOnWriteArrayList<Object> list = (CopyOnWriteArrayList<Object>) field.get(DriverManager.class);
+                    Object object = list.get(list.size() - 1);
+                    list.remove(object);
+                    list.add(0, object);
+                    try {
+                        MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
 
-                ObjectName objectName = new ObjectName(MBEAN_NAME);
-                if (!mbeanServer.isRegistered(objectName)) {
-                    mbeanServer.registerMBean(INSTANCE, objectName);
+                        ObjectName objectName = new ObjectName(MBEAN_NAME);
+                        if (!mbeanServer.isRegistered(objectName)) {
+                            mbeanServer.registerMBean(INSTANCE, objectName);
+                        }
+                    } catch (Throwable ex) {
+                        logger.warn("register druid-driver mbean error", ex);
+                    }
                 }
-            } catch (Throwable ex) {
-                logger.warn("register druid-driver mbean error", ex);
             }
+
 
         } catch (Exception e) {
 
@@ -130,5 +134,6 @@ public final class DriverProxy implements Driver {
         }
         throw new SQLFeatureNotSupportedException();
     }
+
 
 }

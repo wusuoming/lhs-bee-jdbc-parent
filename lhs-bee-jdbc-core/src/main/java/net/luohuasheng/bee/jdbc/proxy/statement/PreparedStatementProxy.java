@@ -8,8 +8,9 @@ import java.sql.*;
 import java.util.Calendar;
 
 /**
- * @author wusm
+ * @author luohuasheng
  */
+@SuppressWarnings(value = "AliDeprecation")
 public class PreparedStatementProxy extends StatementProxy<PreparedStatement> implements PreparedStatement {
 
     public PreparedStatementProxy(PreparedStatement statement) {

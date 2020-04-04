@@ -2,17 +2,15 @@ package net.luohuasheng.bee.jdbc.proxy;
 
 
 import com.alibaba.druid.pool.DruidDataSource;
+import net.luohuasheng.bee.jdbc.common.enums.PoolType;
 import net.luohuasheng.bee.jdbc.proxy.statement.StatementProxy;
 import net.luohuasheng.bee.jdbc.utils.DBUtils;
 
 import java.sql.Connection;
-import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 
 public class DriverProxyTest {
 
@@ -56,4 +54,11 @@ public class DriverProxyTest {
 
     }
 
+    @org.junit.Test
+    public void connect5() throws SQLException {
+        for (PoolType value : PoolType.values()) {
+            System.out.println("value.isPresent() = " + value.isPresent());
+        }
+
+    }
 }

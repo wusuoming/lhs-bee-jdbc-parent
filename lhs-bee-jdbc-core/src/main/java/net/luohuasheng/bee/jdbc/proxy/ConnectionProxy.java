@@ -10,9 +10,10 @@ import java.util.Properties;
 import java.util.concurrent.Executor;
 
 /**
- * @author wusm
+ * @author luohuasheng
  */
 public class ConnectionProxy implements Connection {
+
     private Connection connection;
 
     public ConnectionProxy(Connection connection) {
@@ -69,7 +70,7 @@ public class ConnectionProxy implements Connection {
 
     @Override
     public void close() throws SQLException {
-        connection.commit();
+        connection.close();
     }
 
 

@@ -3,7 +3,7 @@ package net.luohuasheng.bee.jdbc.proxy.statement;
 import java.sql.*;
 
 /**
- * @author wusm
+ * @author luohuasheng
  */
 public class StatementProxy<S extends Statement> implements Statement {
 
@@ -307,9 +307,8 @@ public class StatementProxy<S extends Statement> implements Statement {
         if (resultSet.isLast()) {
             return resultSet.getRow();
         } else {
-            int row = 0;
             resultSet.last();
-            row = resultSet.getRow();
+            int row = resultSet.getRow();
             resultSet.beforeFirst();
             return row;
         }

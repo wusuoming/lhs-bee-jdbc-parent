@@ -9,7 +9,7 @@ import java.util.Calendar;
 import java.util.Map;
 
 /**
- * @author wusm
+ * @author luohuasheng
  */
 public class CallableStatementProxy extends StatementProxy<CallableStatement> implements CallableStatement {
 

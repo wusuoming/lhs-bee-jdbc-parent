@@ -1,6 +1,6 @@
 package net.luohuasheng.bee.jdbc;
 /**
- * @author wusm
+ * @author luohuasheng
  */
 public class JdbcBuilder {
 
