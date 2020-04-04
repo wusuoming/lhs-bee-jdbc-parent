@@ -106,6 +106,7 @@ public class PreparedStatementProxy extends StatementProxy<PreparedStatement> im
     }
 
     @Override
+    @Deprecated
     public void setUnicodeStream(int parameterIndex, InputStream x, int length) throws SQLException {
         statement.setUnicodeStream(parameterIndex, x, length);
 

@@ -316,6 +316,12 @@ public class StatementProxy<S extends Statement> implements Statement {
     }
 
     protected interface ValueRunnable<V> {
+        /**
+         * 执行方法
+         *
+         * @return 执行结果
+         * @throws SQLException 数据库异常
+         */
         V run() throws SQLException;
     }
 }

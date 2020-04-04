@@ -1,5 +1,6 @@
-package net.luohuasheng.bee.jdbc.utils.enums;
+package net.luohuasheng.bee.jdbc.common.enums;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Driver;
 import java.util.HashMap;
 import java.util.Map;
@@ -224,7 +225,7 @@ public enum DriverType {
     private final String jdbcUrl;
     private final String dbType;
     private String code;
-    private String[] driverClasss;
+    private String[] driversClass;
     private static Map<String, Driver> driverMap = new HashMap<>();
 
     public String getCode() {
@@ -232,18 +233,18 @@ public enum DriverType {
     }
 
 
-    public String[] getDriverClasss() {
-        return driverClasss;
+    public String[] getDriversClass() {
+        return driversClass;
     }
 
     public String getJdbcUrl() {
         return jdbcUrl;
     }
 
-    DriverType(String code, String jdbcUrl, String dbType, String... driverClasss) {
+    DriverType(String code, String jdbcUrl, String dbType, String... driversClass) {
         this.code = code;
         this.dbType = dbType;
-        this.driverClasss = driverClasss;
+        this.driversClass = driversClass;
         this.jdbcUrl = jdbcUrl;
     }
 
@@ -261,10 +262,10 @@ public enum DriverType {
         if (driver == null) {
             for (DriverType element : DriverType.values()) {
                 if (url.startsWith(element.jdbcUrl)) {
-                    return loadDriver(element.driverClasss);
+                    return loadDriver(element.driversClass);
                 }
             }
-            driver = loadDriver(MYSQL.driverClasss);
+            driver = loadDriver(MYSQL.driversClass);
             driverMap.put(url, driver);
         }
         return driver;
@@ -272,12 +273,12 @@ public enum DriverType {
     }
 
 
-    private static Driver loadDriver(String[] driverClasss) {
-        for (String driverClass : driverClasss) {
+    private static Driver loadDriver(String[] driversClass) {
+        for (String driverClass : driversClass) {
             try {
                 Class<?> classZ = DriverType.class.getClassLoader().loadClass(driverClass);
-                return (Driver) classZ.newInstance();
-            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+                return (Driver) classZ.getDeclaredConstructor().newInstance();
+            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
                 e.printStackTrace();
             }
 

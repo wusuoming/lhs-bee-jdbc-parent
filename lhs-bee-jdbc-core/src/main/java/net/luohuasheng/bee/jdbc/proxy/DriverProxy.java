@@ -1,6 +1,6 @@
 package net.luohuasheng.bee.jdbc.proxy;
 
-import net.luohuasheng.bee.jdbc.utils.enums.DriverType;
+import net.luohuasheng.bee.jdbc.common.enums.DriverType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +16,9 @@ import java.sql.*;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * @author wusuoming
+ */
 public final class DriverProxy implements Driver {
     private static DriverProxy INSTANCE = null;
     private final static String MBEAN_NAME = "net.luohuasheng.bee.jdbc:type=DriverProxy";
