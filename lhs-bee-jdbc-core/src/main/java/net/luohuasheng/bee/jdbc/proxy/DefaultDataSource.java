@@ -43,6 +43,9 @@ public class DefaultDataSource implements DataSource {
             if (loginTimeout != null) {
                 connection.setNetworkTimeout(executor, loginTimeout);
             }
+            if (connection instanceof ConnectionProxy) {
+                ((ConnectionProxy) connection).setDefaultDataSource(this);
+            }
             POOL.add(connection);
         }
         try {

@@ -15,6 +15,7 @@ import java.util.concurrent.Executor;
 public class ConnectionProxy implements Connection {
 
     private Connection connection;
+    private DefaultDataSource defaultDataSource;
 
     public ConnectionProxy(Connection connection) {
         this.connection = connection;
@@ -70,7 +71,11 @@ public class ConnectionProxy implements Connection {
 
     @Override
     public void close() throws SQLException {
-        connection.close();
+        if (defaultDataSource != null) {
+            defaultDataSource.release(this);
+        } else {
+            connection.close();
+        }
     }
 
 
@@ -339,5 +344,9 @@ public class ConnectionProxy implements Connection {
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return connection.isWrapperFor(iface);
+    }
+
+    public void setDefaultDataSource(DefaultDataSource defaultDataSource) {
+        this.defaultDataSource = defaultDataSource;
     }
 }
