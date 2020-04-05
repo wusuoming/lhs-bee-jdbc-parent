@@ -1,7 +1,5 @@
 package net.luohuasheng.bee.jdbc.component.structure;
 
-import com.alibaba.druid.util.StringUtils;
-import com.sun.istack.internal.NotNull;
 import net.luohuasheng.bee.jdbc.common.enums.ColumnType;
 import net.luohuasheng.bee.jdbc.common.enums.DataType;
 import net.luohuasheng.bee.jdbc.common.enums.DriverType;
@@ -33,7 +31,7 @@ public class StructureComponent extends BaseComponent {
         super(dataSource, driverType);
     }
 
-    public List<TableDto> loadTables(@NotNull TableType type, boolean isLoadColumn) throws SQLException {
+    public List<TableDto> loadTables(TableType type, boolean isLoadColumn) throws SQLException {
         return execute(connection -> {
             try {
                 DatabaseMetaData metaData = connection.getMetaData();
@@ -132,10 +130,10 @@ public class StructureComponent extends BaseComponent {
             tableDto.setRemarks((String) map.get("REMARKS"));
             tableDto.setTableName((String) map.get("TABLE_NAME"));
             tableDto.setTableType((String) map.get("TABLE_TYPE"));
-            if (!StringUtils.isEmpty((String) map.get("TABLE_SCHEM"))) {
+            if (map.containsKey("TABLE_SCHEM")) {
                 tableDto.setTableSchem((String) map.get("TABLE_SCHEM"));
             }
-            if (!StringUtils.isEmpty((String) map.get("TABLE_CAT"))) {
+            if (map.containsKey("TABLE_CAT")) {
                 tableDto.setTableCat((String) map.get("TABLE_CAT"));
             }
 
