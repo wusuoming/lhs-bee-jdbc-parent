@@ -16,6 +16,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author luohuasheng
@@ -39,9 +40,15 @@ public class StructureComponent extends BaseComponent {
                 ResultSet tables = metaData.getTables(catalog, schema, "%", new String[]{type.getCode()});
                 List<TableDto> tableDtos = structureDialect.mergeSpecificTable(loadTable(tables));
                 if (isLoadColumn) {
-                    for (TableDto tableDto : tableDtos) {
-                        tableDto.setColumnDtos(loadTableColumn(tableDto.getTableName()));
-                    }
+                    tableDtos = tableDtos.stream().parallel().peek(tableDto -> {
+                        try {
+                            tableDto.setColumnDtos(loadTableColumn(tableDto.getTableName()));
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }).collect(Collectors.toList());
+
+
                 }
                 return tableDtos;
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {

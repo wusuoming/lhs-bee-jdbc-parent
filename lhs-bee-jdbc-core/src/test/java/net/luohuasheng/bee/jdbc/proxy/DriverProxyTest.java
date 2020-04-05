@@ -70,7 +70,7 @@ public class DriverProxyTest {
     @org.junit.Test
     public void connect6() throws SQLException {
         JdbcComponent component = JdbcBuilder.create().setDataSourceInfo(url, username, password).build();
-        for (TableDto loadTable : component.structure().loadTables(TableType.TABLE, false)) {
+        for (TableDto loadTable : component.structure().loadTables(TableType.TABLE, true)) {
             System.out.println(loadTable);
         }
 
