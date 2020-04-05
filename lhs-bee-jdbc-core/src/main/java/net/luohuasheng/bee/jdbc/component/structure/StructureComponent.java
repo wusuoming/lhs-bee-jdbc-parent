@@ -9,11 +9,9 @@ import net.luohuasheng.bee.jdbc.component.BaseComponent;
 import net.luohuasheng.bee.jdbc.component.structure.dialect.DefaultStructureDialect;
 import net.luohuasheng.bee.jdbc.component.structure.dto.ColumnDto;
 import net.luohuasheng.bee.jdbc.component.structure.dto.TableDto;
-import net.luohuasheng.bee.jdbc.proxy.MethodProxy;
 
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Proxy;
 import java.sql.*;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -35,7 +33,7 @@ public class StructureComponent extends BaseComponent {
         return execute(connection -> {
             try {
                 DatabaseMetaData metaData = connection.getMetaData();
-                StructureDialect structureDialect = createStructureDialect(connection);
+                StructureDialect structureDialect = createStructureDialect();
                 String catalog = connection.getCatalog();
                 String schema = structureDialect.getSchema(metaData.getUserName().toUpperCase());
                 ResultSet tables = metaData.getTables(catalog, schema, "%", new String[]{type.getCode()});
@@ -52,26 +50,29 @@ public class StructureComponent extends BaseComponent {
         });
     }
 
-    private StructureDialect createStructureDialect(Connection connection) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    private StructureDialect createStructureDialect() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         if (driverType.getStructureDialectClass().isInterface()) {
-            return (StructureDialect) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{StructureDialect.class}, new MethodProxy(DefaultStructureDialect.get()));
+            return DefaultStructureDialect.get();
         } else {
-            return driverType.getStructureDialectClass().getConstructor(Connection.class).newInstance(connection);
+            return driverType.getStructureDialectClass().getConstructor().newInstance();
         }
     }
 
+    private List<ColumnDto> loadTableColumn(Connection connection, String tableName) throws SQLException {
+        try {
+            DatabaseMetaData metaData = connection.getMetaData();
+            StructureDialect structureDialect = createStructureDialect();
+            String catalog = connection.getCatalog();
+            String schema = structureDialect.getSchema(metaData.getUserName().toUpperCase());
+            return structureDialect.mergeSpecificColumns(mergePk(pks(metaData, connection, schema, tableName), columns(metaData.getColumns(catalog, schema, tableName, "%"))));
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new SQLException(driverType.getCode() + " Do not support", e);
+        }
+
+    }
+
     public List<ColumnDto> loadTableColumn(String tableName) throws SQLException {
-        return execute(connection -> {
-            try {
-                DatabaseMetaData metaData = connection.getMetaData();
-                StructureDialect structureDialect = createStructureDialect(connection);
-                String catalog = connection.getCatalog();
-                String schema = structureDialect.getSchema(metaData.getUserName().toUpperCase());
-                return structureDialect.mergeSpecificColumns(mergePk(pks(metaData, connection, schema, tableName), columns(metaData.getColumns(catalog, schema, tableName, "%"))));
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                throw new SQLException(driverType.getCode() + " Do not support", e);
-            }
-        });
+        return execute(connection -> loadTableColumn(connection, tableName));
     }
 
     public List<ColumnDto> loadSqlColumn(String sql) throws SQLException {

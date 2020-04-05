@@ -10,6 +10,9 @@ import net.luohuasheng.bee.jdbc.proxy.DefaultDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.sql.DataSource;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author luohuasheng
@@ -17,27 +20,80 @@ import javax.sql.DataSource;
 public class JdbcBuilder {
 
     private DataSource dataSource;
+    private static Map<String, DataSource> dataSourceMap = Collections.synchronizedMap(new HashMap<>());
+    private static Map<DataSource, JdbcComponent> builderMap = Collections.synchronizedMap(new HashMap<>());
+
 
     private JdbcBuilder() {
+
     }
 
+    /**
+     * 根据数据源删除相关缓存
+     *
+     * @param dataSource 数据源
+     */
+    public static void clear(DataSource dataSource) {
+        JdbcComponent component = builderMap.remove(dataSource);
+        component.clear(dataSource);
+    }
+
+    /**
+     * 根据数据库连接信息删除相关缓存
+     *
+     * @param url      数据库URL
+     * @param username 用户名
+     * @param password 密码
+     */
+    public static void clear(String url, String username, String password) {
+        String key = url + username + password;
+        DataSource dataSource = dataSourceMap.get(key);
+        if (dataSource != null) {
+            dataSourceMap.remove(key);
+            clear(dataSource);
+        }
+    }
+
+    /**
+     * 构建JDBC建造者
+     *
+     * @return JDBC建造者
+     */
     public static JdbcBuilder create() {
         return new JdbcBuilder();
     }
 
+    /**
+     * 设置数据源
+     *
+     * @param dataSource 数据源
+     * @return JDBC建造者
+     */
     public JdbcBuilder setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
         return this;
     }
 
+    /**
+     * 设置数据源
+     *
+     * @param url      数据库URL
+     * @param username 用户名
+     * @param password 密码
+     * @return JDBC建造者
+     */
     public JdbcBuilder setDataSourceInfo(String url, String username, String password) {
-        this.dataSource = DataSourceUtils.createDataSource(url, username, password);
+        this.dataSource = dataSourceMap.computeIfAbsent(url + username + password, k -> DataSourceUtils.createDataSource(url, username, password));
         return this;
     }
 
+    /**
+     * 建造JDBC处理组件
+     *
+     * @return JDBC处理组件
+     */
     public JdbcComponent build() {
-        DriverType driverType = getDriverType(dataSource);
-        return new JdbcComponent(dataSource, driverType);
+        return builderMap.computeIfAbsent(dataSource, k -> new JdbcComponent(dataSource, getDriverType(dataSource)));
     }
 
     private DriverType getDriverType(DataSource dataSource) {

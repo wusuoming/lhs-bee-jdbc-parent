@@ -5,6 +5,9 @@ import net.luohuasheng.bee.jdbc.component.execute.ExecuteComponent;
 import net.luohuasheng.bee.jdbc.component.structure.StructureComponent;
 
 import javax.sql.DataSource;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * sql语句执行方言组件类
@@ -12,6 +15,9 @@ import javax.sql.DataSource;
  * @author luohuasheng
  */
 public class JdbcComponent {
+    private static Map<DataSource, StructureComponent> structureComponentMap =Collections.synchronizedMap(new HashMap<>());
+
+    private static Map<DataSource, ExecuteComponent> executeComponentMap = Collections.synchronizedMap(new HashMap<>());
 
     /**
      * 数据源
@@ -34,7 +40,7 @@ public class JdbcComponent {
      * @return 库结构处理器组件
      */
     public StructureComponent structure() {
-        return new StructureComponent(dataSource, driverType);
+        return structureComponentMap.computeIfAbsent(dataSource, k -> new StructureComponent(dataSource, driverType));
     }
 
     /**
@@ -43,6 +49,11 @@ public class JdbcComponent {
      * @return Sql运行处理器组件
      */
     public ExecuteComponent execute() {
-        return new ExecuteComponent(dataSource, driverType);
+        return executeComponentMap.computeIfAbsent(dataSource, k -> new ExecuteComponent(dataSource, driverType));
+    }
+
+    public void clear(DataSource dataSource) {
+        structureComponentMap.remove(dataSource);
+        executeComponentMap.remove(dataSource);
     }
 }

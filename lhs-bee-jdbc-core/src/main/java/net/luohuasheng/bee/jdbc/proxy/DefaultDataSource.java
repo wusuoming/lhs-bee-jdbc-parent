@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.Properties;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
@@ -27,6 +28,7 @@ public class DefaultDataSource implements DataSource {
     private String url;
     private Integer poolNum;
     private Integer loginTimeout;
+    private Properties properties;
 
     private AtomicInteger connectNum = new AtomicInteger(0);
     private static BlockingQueue<Connection> POOL = new LinkedBlockingDeque<>();
@@ -39,7 +41,12 @@ public class DefaultDataSource implements DataSource {
 
     private Connection getConnection(String url, String username, String password) throws SQLException {
         if (POOL.isEmpty() && connectNum.get() < (poolNum == null ? POOL_NUM : poolNum)) {
-            Connection connection = DriverManager.getConnection(url, username, password);
+            Connection connection;
+            if (properties == null) {
+                connection = DriverManager.getConnection(url, username, password);
+            } else {
+                connection = DriverManager.getConnection(url, properties);
+            }
             if (loginTimeout != null) {
                 connection.setNetworkTimeout(executor, loginTimeout);
             }
@@ -148,5 +155,17 @@ public class DefaultDataSource implements DataSource {
 
     public void setPoolNum(Integer poolNum) {
         this.poolNum = poolNum;
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+        if (properties != null) {
+            properties.setProperty("remarks", "true");
+            properties.setProperty("useInformationSchema", "true");
+        }
     }
 }

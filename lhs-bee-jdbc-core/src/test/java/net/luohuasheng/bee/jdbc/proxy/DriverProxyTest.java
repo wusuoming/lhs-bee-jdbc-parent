@@ -60,7 +60,7 @@ public class DriverProxyTest {
     }
 
     @org.junit.Test
-    public void connect5() throws SQLException {
+    public void connect5() {
         for (PoolType value : PoolType.values()) {
             System.out.println("value.isPresent() = " + value.isPresent());
         }
@@ -70,7 +70,7 @@ public class DriverProxyTest {
     @org.junit.Test
     public void connect6() throws SQLException {
         JdbcComponent component = JdbcBuilder.create().setDataSourceInfo(url, username, password).build();
-        for (TableDto loadTable : component.structure().loadTables(TableType.TABLE, true)) {
+        for (TableDto loadTable : component.structure().loadTables(TableType.TABLE, false)) {
             System.out.println(loadTable);
         }
 

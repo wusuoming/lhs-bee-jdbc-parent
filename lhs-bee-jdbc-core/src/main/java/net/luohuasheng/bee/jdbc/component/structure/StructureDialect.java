@@ -19,9 +19,7 @@ public interface StructureDialect {
      * @param tables 原表信息
      * @return 合并后的表信息
      */
-    default List<TableDto> mergeSpecificTable(List<TableDto> tables) {
-        return tables;
-    }
+    List<TableDto> mergeSpecificTable(List<TableDto> tables);
 
     /**
      * 合并个性化字段信息
@@ -29,9 +27,7 @@ public interface StructureDialect {
      * @param columns 原字段信息
      * @return 合并后的字段信息
      */
-    default List<ColumnDto> mergeSpecificColumns(List<ColumnDto> columns) {
-        return columns;
-    }
+    List<ColumnDto> mergeSpecificColumns(List<ColumnDto> columns);
 
     /**
      * 获取数据库模式
@@ -39,7 +35,5 @@ public interface StructureDialect {
      * @param username 用户名
      * @return 数据库模式
      */
-    default String getSchema(String username) {
-        return username;
-    }
+    String getSchema(String username);
 }

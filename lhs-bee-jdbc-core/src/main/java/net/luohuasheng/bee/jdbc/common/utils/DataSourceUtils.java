@@ -12,6 +12,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.sql.DataSource;
 import java.beans.PropertyVetoException;
+import java.util.Properties;
 
 /**
  * @author : luohuasheng
@@ -44,6 +45,12 @@ public class DataSourceUtils {
         dataSource.setUrl(url);
         dataSource.setUsername(username);
         dataSource.setPassword(password);
+        Properties properties = new Properties();
+        properties.setProperty("user",username);
+        properties.setProperty("password",password);
+        properties.setProperty("remarks", "true");
+        properties.setProperty("useInformationSchema", "true");
+        dataSource.setProperties(properties);
         return dataSource;
     }
 
@@ -57,6 +64,10 @@ public class DataSourceUtils {
         dataSource.setJdbcUrl(url);
         dataSource.setUser(username);
         dataSource.setPassword(password);
+        Properties properties = new Properties();
+        properties.setProperty("remarks", "true");
+        properties.setProperty("useInformationSchema", "true");
+        dataSource.setProperties(properties);
         return dataSource;
     }
 
@@ -66,6 +77,7 @@ public class DataSourceUtils {
         dataSource.setUrl(url);
         dataSource.setUsername(username);
         dataSource.setPassword(password);
+        dataSource.setConnectionProperties("remarks=true;useInformationSchema=true");
         return dataSource;
     }
 
@@ -75,6 +87,10 @@ public class DataSourceUtils {
         dataSource.setDriver(DriverProxy.get());
         dataSource.setUsername(username);
         dataSource.setPassword(password);
+        Properties properties = new Properties();
+        properties.setProperty("remarks", "true");
+        properties.setProperty("useInformationSchema", "true");
+        dataSource.setConnectProperties(properties);
         dataSource.setDbType(DriverType.getDriverTypeForStartUrl(url).getDbType());
         return dataSource;
     }
@@ -85,6 +101,10 @@ public class DataSourceUtils {
         dataSource.setJdbcUrl(url);
         dataSource.setUsername(username);
         dataSource.setPassword(password);
+        Properties properties = new Properties();
+        properties.setProperty("remarks", "true");
+        properties.setProperty("useInformationSchema", "true");
+        dataSource.setDataSourceProperties(properties);
         return dataSource;
     }
 
