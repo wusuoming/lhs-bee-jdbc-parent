@@ -4,6 +4,7 @@ package net.luohuasheng.bee.jdbc.common.utils;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.zaxxer.hikari.HikariDataSource;
+import net.luohuasheng.bee.jdbc.common.enums.DriverType;
 import net.luohuasheng.bee.jdbc.common.enums.PoolType;
 import net.luohuasheng.bee.jdbc.proxy.DefaultDataSource;
 import net.luohuasheng.bee.jdbc.proxy.DriverProxy;
@@ -74,6 +75,7 @@ public class DataSourceUtils {
         dataSource.setDriver(DriverProxy.get());
         dataSource.setUsername(username);
         dataSource.setPassword(password);
+        dataSource.setDbType(DriverType.getDriverTypeForStartUrl(url).getDbType());
         return dataSource;
     }
 

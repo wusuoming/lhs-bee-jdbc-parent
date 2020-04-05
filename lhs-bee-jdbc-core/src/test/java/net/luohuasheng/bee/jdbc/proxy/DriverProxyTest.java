@@ -2,7 +2,12 @@ package net.luohuasheng.bee.jdbc.proxy;
 
 
 import com.alibaba.druid.pool.DruidDataSource;
+import net.luohuasheng.bee.jdbc.JdbcBuilder;
+import net.luohuasheng.bee.jdbc.JdbcComponent;
 import net.luohuasheng.bee.jdbc.common.enums.PoolType;
+import net.luohuasheng.bee.jdbc.common.enums.TableType;
+import net.luohuasheng.bee.jdbc.component.structure.dto.ColumnDto;
+import net.luohuasheng.bee.jdbc.component.structure.dto.TableDto;
 import net.luohuasheng.bee.jdbc.proxy.statement.StatementProxy;
 import net.luohuasheng.bee.jdbc.utils.DBUtils;
 
@@ -60,5 +65,21 @@ public class DriverProxyTest {
             System.out.println("value.isPresent() = " + value.isPresent());
         }
 
+    }
+
+    @org.junit.Test
+    public void connect6() throws SQLException {
+        JdbcComponent component = JdbcBuilder.create().setDataSourceInfo(url, username, password).build();
+        for (TableDto loadTable : component.structure().loadTables(TableType.TABLE, true)) {
+            System.out.println(loadTable);
+        }
+
+    }
+
+    @org.junit.Test
+    public void connect7() throws SQLException {
+        JdbcComponent component = JdbcBuilder.create().setDataSourceInfo(url, username, password).build();
+        List<ColumnDto> columns = component.structure().loadSqlColumn("select * from app_api");
+        System.out.println(columns);
     }
 }

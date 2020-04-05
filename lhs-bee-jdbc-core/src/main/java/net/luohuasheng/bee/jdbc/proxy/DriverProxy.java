@@ -86,13 +86,14 @@ public final class DriverProxy implements Driver {
 
     @Override
     public boolean acceptsURL(String url) throws SQLException {
+        driver = DriverType.getDriverForStartUrl(url);
         return driver.acceptsURL(url);
     }
 
 
     @Override
     public Connection connect(String url, Properties info) throws SQLException {
-        driver = DriverType.getStartUrl(url);
+        driver = DriverType.getDriverForStartUrl(url);
         return new ConnectionProxy(driver.connect(url, info));
     }
 
@@ -125,7 +126,7 @@ public final class DriverProxy implements Driver {
     public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
         if (parentLoggerSupported) {
             try {
-                Method method = driver.getClass().getMethod("getParentLogger", new Class[0]);
+                Method method = driver.getClass().getMethod("getParentLogger");
                 return (java.util.logging.Logger) method.invoke(driver, new Object[0]);
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                 parentLoggerSupported = false;
