@@ -1,6 +1,8 @@
 package net.luohuasheng.bee.jdbc.common.utils;
 
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -44,38 +46,39 @@ public class ResultSetUtils {
         return rowData;
     }
 
-    public static <T> List<T> resultSetToBeanList(ResultSet rs, Class<T> classZ) throws SQLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        if (rs == null || rs.isLast()) {
-            return Collections.emptyList();
-        }
-        ResultSetMetaData md = rs.getMetaData();
-        int columnCount = md.getColumnCount();
-        List<T> list = new ArrayList<>();
-        while (rs.next()) {
-            T t = classZ.getDeclaredConstructor().newInstance();
-            for (int i = 1; i <= columnCount; i++) {
-                String columnName = md.getColumnName(i);
 
-            }
-            list.add(t);
+    public static <T> List<T> resultSetToBeanList(ResultSet rs, Class<T> classZ) throws SQLException {
+        ResultSetMetaData md = rs.getMetaData();
+        List<T> result = new ArrayList<>();
+        T t;
+        while ((t = resultSetToBean(rs, classZ)) != null) {
+            result.add(t);
         }
-        return list;
+        return result;
     }
 
+
     public static <T> T resultSetToBean(ResultSet rs, Class<T> classZ) throws SQLException {
-        if (rs == null || rs.isLast()) {
+        if (rs == null || !rs.next()) {
             return null;
         }
-        //得到结果集(rs)的结构信息，比如字段数、字段名等
         ResultSetMetaData md = rs.getMetaData();
-        //返回此 ResultSet 对象中的列数
         int columnCount = md.getColumnCount();
-        rs.first();
-        Map<String, Object> rowData = new HashMap<>(columnCount);
-        for (int i = 1; i <= columnCount; i++) {
-            rowData.put(md.getColumnName(i), rs.getObject(i));
+        try {
+            T t = classZ.getConstructor().newInstance();
+            for (int i = 1; i <= columnCount; i++) {
+                String columnName = md.getColumnName(i);
+                Object value = rs.getObject(i);
+                ValueConvertUtils.setPropertyValue(columnName, classZ, t, value);
+                if (columnName.toLowerCase().startsWith("is")) {
+                    columnName = columnName.substring(2);
+                    ValueConvertUtils.setPropertyValue(columnName, classZ, t, value);
+                }
+            }
+            return t;
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new SQLException("create bean error ", e);
         }
-        return null;
     }
 
 

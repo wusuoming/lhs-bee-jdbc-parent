@@ -65,17 +65,27 @@ public class StructureComponent extends BaseComponent {
         }
     }
 
+    //    private List<ColumnDto> loadTableColumn(Connection connection, String tableName) throws SQLException {
+//        try {
+//            DatabaseMetaData metaData = connection.getMetaData();
+//            StructureDialect structureDialect = createStructureDialect();
+//            String catalog = connection.getCatalog();
+//            String schema = structureDialect.getSchema(metaData.getUserName().toUpperCase());
+//            return structureDialect.mergeSpecificColumns(mergePk(pks(metaData, connection, schema, tableName), columns(metaData.getColumns(catalog, schema, tableName, "%"))));
+//        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+//            throw new SQLException(driverType.getCode() + " Do not support", e);
+//        }
+//    }
     private List<ColumnDto> loadTableColumn(Connection connection, String tableName) throws SQLException {
         try {
             DatabaseMetaData metaData = connection.getMetaData();
             StructureDialect structureDialect = createStructureDialect();
             String catalog = connection.getCatalog();
             String schema = structureDialect.getSchema(metaData.getUserName().toUpperCase());
-            return structureDialect.mergeSpecificColumns(mergePk(pks(metaData, connection, schema, tableName), columns(metaData.getColumns(catalog, schema, tableName, "%"))));
+            return structureDialect.mergeSpecificColumns(mergePk(pks(metaData, connection, schema, tableName), ResultSetUtils.resultSetToBeanList(metaData.getColumns(catalog, schema, tableName, "%"), ColumnDto.class)));
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new SQLException(driverType.getCode() + " Do not support", e);
         }
-
     }
 
     public List<ColumnDto> loadTableColumn(String tableName) throws SQLException {

@@ -82,4 +82,11 @@ public class DriverProxyTest {
         List<ColumnDto> columns = component.structure().loadSqlColumn("select * from app_api");
         System.out.println(columns);
     }
+
+    @org.junit.Test
+    public void connect8() throws SQLException {
+        JdbcComponent component = JdbcBuilder.create().setDataSourceInfo(url, username, password).build();
+        List<ColumnDto> columns = component.structure().loadTableColumn("app_api");
+        System.out.println(columns);
+    }
 }
