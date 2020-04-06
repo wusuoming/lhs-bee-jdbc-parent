@@ -49,7 +49,6 @@ public enum ColumnType {
 
     private DataType dataType;
 
-    private Class<?> javaType;
 
 
     ColumnType(Integer code, DataType dataType) {

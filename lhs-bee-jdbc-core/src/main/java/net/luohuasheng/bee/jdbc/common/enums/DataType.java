@@ -17,7 +17,7 @@ public enum DataType {
     }
 
 
-    public static DataType getTypeByCode(String code) {
+    public static DataType getTypeByCode(Integer code) {
         for (DataType element : DataType.values()) {
             if (element.getCode().equals(code)) {
                 return element;

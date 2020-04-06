@@ -1,8 +1,10 @@
 package net.luohuasheng.bee.jdbc.common.utils;
 
-import java.beans.PropertyDescriptor;
+import net.luohuasheng.bee.jdbc.common.enums.ColumnType;
+import net.luohuasheng.bee.jdbc.common.enums.DataType;
+import net.luohuasheng.bee.jdbc.common.utils.convert.CustomConvent;
+
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -68,7 +70,7 @@ public class ResultSetUtils {
             for (int i = 1; i <= columnCount; i++) {
                 String columnName = md.getColumnName(i);
                 Object value = rs.getObject(i);
-                ValueConvertUtils.setPropertyValue(columnName, classZ, t, value);
+                ValueConvertUtils.setPropertyValue(columnName, classZ, t, value, (CustomConvent<DataType>) value1 -> ColumnType.getTypeByCode(Integer.valueOf(value1.toString())).getDataType());
                 if (columnName.toLowerCase().startsWith("is")) {
                     columnName = columnName.substring(2);
                     ValueConvertUtils.setPropertyValue(columnName, classZ, t, value);
