@@ -48,7 +48,6 @@ public class ResultSetUtils {
 
 
     public static <T> List<T> resultSetToBeanList(ResultSet rs, Class<T> classZ) throws SQLException {
-        ResultSetMetaData md = rs.getMetaData();
         List<T> result = new ArrayList<>();
         T t;
         while ((t = resultSetToBean(rs, classZ)) != null) {
